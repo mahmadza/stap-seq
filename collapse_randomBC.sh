@@ -8,12 +8,11 @@ set -o pipefail
 
 # Programs:
 # * bowtie
-# * slippage_filter_se.sh
 # * Jim Kent's utils
 
 # Files:
-# * /groups/stark/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}
-# * /groups/stark/genomes/chrom/${ASSEMBLY}.chrom.sizes
+# * /XXXX/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}     location of bowtie indices
+# * /XXXX/chrom/${ASSEMBLY}.chrom.sizes              location of chromosome sizes
 
 ################################################################################
 # Set default values
@@ -67,9 +66,9 @@ fi
 ################################################################################
 
 if [ "$ASSEMBLY" = "dm3" ]; then
-    SIZES=/groups/stark/genomes/chrom/dm3.chrom.sizes
+    SIZES=/XXXX/chrom/dm3.chrom.sizes
 else
-    SIZES=/groups/stark/genomes/chrom/${ASSEMBLY}.chrom.sizes
+    SIZES=/XXXX/chrom/${ASSEMBLY}.chrom.sizes
 fi
 
 [ -e "$SIZES" ] || echo >&2 "ERROR: No chromosome size file found for genome assembly ${ASSEMBLY}!"
@@ -77,8 +76,8 @@ fi
 frags_clean=$(mktemp)
 bigBedToBed $INFILE stdout | \
     awk -vOFS="\t" '{
-    random_bc=substr($4,1,8)
-    if( random_bc ~ "N" ) next
+    random_bc=substr($4,1,8)           #extract barcode
+    if( random_bc ~ "N" ) next         #remove sequences with Ns in their random barcode
     print $1,$2,$3,random_bc,$6
     }' | sort -k1,1 -k2,2n -k3,3n -k5,5 -k4,4 | \
         uniq -c | sort -k2,2 -k3,3n -k4,4n -k6,6 -k1,1nr | \
@@ -115,8 +114,7 @@ bigBedToBed $INFILE stdout | \
             else
     
             {
-                #if not a new position...
-    
+                #if not a new position,
                 #go over all of the valid barcodes
                 for(bc in old_barcode)
                     if(bc_diff($5,bc)==1)                   #skip if difference of two bc just 1
@@ -129,14 +127,15 @@ bigBedToBed $INFILE stdout | \
             }
         }' | awk -vOFS="\t" '{print $2,$3,$4,$5,0,$6,$1}' > $frags_clean
 
-#convert to bigbed
-bedToBigBed $frags_clean /groups/stark/genomes/chrom/${ASSEMBLY}.chrom.sizes $OUTFILE
+#convert collapsed fragments to bigbed
+bedToBigBed $frags_clean /XXX/chrom/${ASSEMBLY}.chrom.sizes $OUTFILE
 
 ################################################################################
 # Exit
 ################################################################################
-
+#cleanup
 rm -rf $frags_clean
 
+#exit success
 exit 0
 
