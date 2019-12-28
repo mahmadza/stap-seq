@@ -11,14 +11,14 @@ set -o pipefail
 # * Jim Kent's utils
 
 # Files:
-# * /XXXX/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}     location of bowtie indices
-# * /XXXX/chrom/${ASSEMBLY}.chrom.sizes              location of chromosome sizes
+# /XXXX/indices/bowtie/${ASSEMBLY}/${ASSEMBLY}     location of bowtie indices
+# /XXXX/chrom/${ASSEMBLY}.chrom.sizes              location of chromosome sizes
 
 ################################################################################
 # Set default values
 ################################################################################
 
-ASSEMBLY="dm3"
+ASSEMBLY="dm3"              #genome assembly. dm3 is Drosophila melanogaster
 RAN_BARCODE_LEN=8          #random barcode length
 
 ################################################################################
@@ -65,11 +65,7 @@ fi
 # Set index and chromosome sizes
 ################################################################################
 
-if [ "$ASSEMBLY" = "dm3" ]; then
-    SIZES=/XXXX/chrom/dm3.chrom.sizes
-else
-    SIZES=/XXXX/chrom/${ASSEMBLY}.chrom.sizes
-fi
+SIZES=/XXXX/chrom/${ASSEMBLY}.chrom.sizes
 
 [ -e "$SIZES" ] || echo >&2 "ERROR: No chromosome size file found for genome assembly ${ASSEMBLY}!"
 
@@ -134,7 +130,7 @@ bedToBigBed $frags_clean /XXX/chrom/${ASSEMBLY}.chrom.sizes $OUTFILE
 # Exit
 ################################################################################
 #cleanup
-rm -rf $frags_clean
+rm $frags_clean
 
 #exit success
 exit 0
