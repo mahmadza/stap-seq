@@ -1,4 +1,4 @@
-# stap_seq
+# stap-seq
 Core software modules to process STAP-seq raw sequence reads.
 
 This repository contains the typical software that I wrote for analyses for the paper Arnold et al., Nature Biotechnology 2017.
